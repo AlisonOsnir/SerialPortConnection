@@ -5,62 +5,16 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Serial port access</title>
+  <title>Serial Port Connection</title>
+
+  <link rel="stylesheet" href="./style.css">
+  <script defer src="./script.js"></script>
 </head>
 
 <body>
-  <button id="button" style="height: 30px;">Select port</button>
-  <div id="target" style="height: 300px; margin-top: 10px; padding: 10px; border: 1px solid #555; border-radius: 5px; background-color: #EEE;"></div>
+  <button id="selectPortBtn" autofocus="true">Select Port</button>
+  <button id="sendBtn">Send Data</button>
+  <div id="terminal"></div>
 </body>
 
 </html>
-
-<script>
-  const button = document.getElementById('button')
-
-  button.addEventListener('click', async () => {
-    // const usbVendorId = 0x0403;
-    const usbVendorId = 0x1a86; //Loopback cable
-
-    let port = await navigator.serial.requestPort({ filters: [{ usbVendorId }] })
-        document.getElementById('target').innerText += `Port connected!\n\n`
-
-    await port.open({ baudRate: 9600 })
-    await writeOnPort(port, 'PING')
-    await readOnPort(port)
-    await port.close()
-
-    document.getElementById('target').innerText += `\nPort disconnected!\n`
-
-  });
-
-  async function writeOnPort(port, text) {
-    const encoder = new TextEncoder();
-    const writer = port.writable.getWriter();
-    await writer.write(encoder.encode(text));
-    writer.releaseLock();
-  }
-
-  async function readOnPort(port) {
-    while (port.readable) {
-      const reader = port.readable.getReader();
-      try {
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) {
-            // reader canceled.
-            break;
-          }
-          const string = await new TextDecoder().decode(value);
-          document.getElementById('target').innerText += `Writing.....\t ${string}\n`
-          return
-        }
-      } catch (error) {
-        console.error(error)
-      } finally {
-        reader.releaseLock();
-      }
-    }
-  }
-
-</script>

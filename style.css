@@ -1,0 +1,23 @@
+#selectPortBtn, #sendBtn{
+  display: inline-block;
+  height: 30px;
+}
+
+#terminal {
+  display: block;
+  background-color: #FFF;
+  color: #000;
+  min-height: 50vh;
+  margin-top: 10px;
+  padding: 10px;
+  border: 7px solid #333;
+  border-radius: 3px;
+}
+
+.terminal_sucess {
+  border: 7px solid lime !important;
+}
+
+.terminal_error {
+  border: 7px solid red !important;
+}
