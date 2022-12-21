@@ -1,23 +1,51 @@
-#selectPortBtn, #sendBtn{
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.container {
   display: inline-block;
+  margin: 10px;
+}
+
+.container select{
+  margin-right: 10px;
+}
+.container select:hover{
+  border-color:#009BC6;
+  outline: none;
+}
+
+button:focus, button:hover{
+  border-color:#009BC6;
+  outline: none;
+}
+#requestPortBtn, #sendBtn{
   height: 30px;
+  width: 90px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+input[type=checkbox] {
+  transform: scale(1.5);
+  vertical-align: middle;
+  margin-left: 3px;
 }
 
 #terminal {
   display: block;
-  background-color: #FFF;
-  color: #000;
-  min-height: 50vh;
-  margin-top: 10px;
+  background-color: #00000c;
+  color: #FFF;
+  min-height: 93vh;
   padding: 10px;
-  border: 7px solid #333;
-  border-radius: 3px;
+  border: 10px solid #00000c;
 }
 
 .terminal_sucess {
-  border: 7px solid lime !important;
+  border-color: lime !important;
 }
 
 .terminal_error {
-  border: 7px solid red !important;
+  border-color: red !important;
 }

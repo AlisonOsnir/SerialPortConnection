@@ -1,26 +1,37 @@
-const selectPortBtn = document.getElementById('selectPortBtn')
+const requestPortBtn = document.getElementById('requestPortBtn')
 const sendBtn = document.getElementById('sendBtn')
+const portBaudRate = document.getElementById('baudrate')
+const portDataBits = document.getElementById('databits')
+const portParity = document.getElementById('parity')
+const porStopBits = document.getElementById('stopbits')
+const readCheck = document.getElementById('read')
 const terminal = document.getElementById('terminal')
 
-// const usbVendorId = 0x0403;
-// const usbVendorId = 0x1A86; //Loopback cable
-const filters = [
+let port = null
+
+const vendorsfilters = [
   { usbVendorId: 0x0403 },
-  { usbVendorId: 0x1A86 },
+  { usbVendorId: 0x1A86 },//Loopback cable
 ];
 
-let port = null
-const usbBauldRate = 9600;
+const portOpenOptions = {
+  baudRate: portBaudRate.value,
+  dataBits: portDataBits.value,
+  parity: portParity.value,
+  porstopBits: porStopBits.value
+}
 
+window.addEventListener("load", getPairedPorts);
 portListeners()
-selectPortBtn.addEventListener('click', requestPorts);
+requestPortBtn.addEventListener('click', requestPorts);
 sendBtn.addEventListener('click', main)
 
 async function requestPorts() {
   try {
-    await navigator.serial.requestPort({ filters/*: [{ usbVendorId }] */ })
-    terminal.innerText += `< CONNECTED >\n\n`
-    clearTerminalStatus()
+    await navigator.serial.requestPort({ filters: vendorsfilters }) /*: [{ usbVendorId }] */
+    terminal.innerText += `< DEVICE WAS PAIRED >\n\n`
+    clearTerminalState()
+    sendBtn.focus()
   } catch (error) {
     terminal.innerText += `< ERROR: NO PORT SELECTED >\n\n`
     terminal.classList.add('terminal_error')
@@ -31,65 +42,83 @@ async function portListeners() {
   navigator.serial.addEventListener("connect", main)
   navigator.serial.addEventListener("disconnect", e => {
     terminal.innerText += `< DISCONNECTED >\n\n`
-    clearTerminalStatus()
+    clearTerminalState()
+    requestPortBtn.focus()
   })
 }
 
 async function writeOnPort(port, text) {
-  const encoder = new TextEncoder();
-  const writer = port.writable.getWriter();
-  await writer.write(encoder.encode(text));
-  writer.releaseLock();
+  try {
+    const encoder = new TextEncoder();
+    const writer = port.writable.getWriter();
+    await writer.write(encoder.encode(text));
+    writer.releaseLock();
+    terminal.innerText += `WRITING: \t${text}\n`
+  } catch (error) {
+    console.error(error)
+    terminal.innerText += `< ERROR: FAIL TO WRITE ON PORT >\n\n`
+  }
 }
 
 async function readOnPort(port) {
+  if (!readCheck.checked) return
   while (port.readable) {
     const reader = port.readable.getReader();
     try {
       while (true) {
         const { value, done } = await reader.read();
-        if (done) {
-          // reader canceled.
-          break;
-        }
+        if (done) break;  // reader canceled.
+        
         const decoder = new TextDecoder();
         const string = decoder.decode(value);
-        terminal.innerText += `SENDING DATA...\n`
-        terminal.innerText += `${string}\n`
+        terminal.innerText += `\nREADING: \t${string}\n`
         return
       }
     } catch (error) {
       console.error(error)
+      terminal.innerText += `< ERROR: FAIL TO READ ON PORT >\n\n`
     } finally {
       reader.releaseLock();
     }
   }
 }
 
-async function main() {
-  clearTerminalStatus()
-
-  await navigator.serial.getPorts()
-    .then((ports) => {
-      port = ports[0]
-      console.log({ 'Selected-Port': port })
-    });
+async function getPairedPorts() {
+  const ports = await navigator.serial.getPorts();
+  port = ports[0];
 
   if (port) {
-    terminal.innerText = `< CONNECTED >\n\n`
-    await port.open({ baudRate: usbBauldRate })
-    await writeOnPort(port, '_DATA_')
-    await readOnPort(port)
-    await port.close()
-    terminal.innerText += `\n< DONE >\n`
-    terminal.classList.add('terminal_sucess')
-  } else {
-    terminal.innerText += `< ERROR: PORT NOT FOUND >\n\n`
-    terminal.classList.add('terminal_error')
+    const portInfo = await port.getInfo();
+    console.log('Selected Port:', portInfo);
+    terminal.innerText = `Product ID: ${portInfo.usbProductId}\t\|\tVendor ID: ${portInfo.usbVendorId}\n\n`;
+    terminal.innerText += `< CONNECTED >\n\n`;
   }
 }
 
-function clearTerminalStatus() {
+async function main() {
+  clearTerminalState()
+  try {
+    await getPairedPorts()
+    if (port) {
+      await port.open(portOpenOptions)
+      await writeOnPort(port, 'TheMoreYouNow!')
+      await readOnPort(port)
+      await port.close()
+      terminal.innerText += `\n< DONE >\n`
+      terminal.classList.add('terminal_sucess')
+    } else {
+      terminal.innerText += `< ERROR: PORT NOT FOUND >\n\n`
+      terminal.classList.add('terminal_error')
+    }
+  } catch (error) {
+    console.error(error)
+    terminal.innerText += `< ERROR: FAIL TO WRITE ON PORT >\n\n`
+  }
+}
+
+function clearTerminalState() {
   terminal.classList.remove('terminal_sucess')
   terminal.classList.remove('terminal_error')
 }
+
+
