@@ -1,3 +1,8 @@
+:root {
+  --blue-options: #0068E7;
+  --black-terminal: #181818;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -10,25 +15,25 @@
 }
 
 .container select {
-  margin-right: 10px;
+  margin: 10px;
 }
 
 .container select:hover {
-  border-color: #009BC6;
+  border-color: var(--blue-options);
   outline: none;
 }
 
 button:focus,
 button:hover {
-  border-color: #009BC6;
+  border-color: var(--blue-options);
   outline: none;
 }
 
 #requestPortBtn,
-#sendBtn {
+#writeBtn {
   height: 30px;
   width: 90px;
-  margin-right: 10px;
+  margin: 0 2px;
   cursor: pointer;
 }
 
@@ -40,11 +45,12 @@ input[type=checkbox] {
 
 #terminal {
   display: block;
-  background-color: #00000c;
+  background-color: var(--black-terminal);
   color: #FFF;
-  min-height: 93vh;
+  height: 90vh;
   padding: 12px;
-  border: 12px solid #00000c;
+  border: 12px solid var(--black-terminal);
+  overflow: auto;
 }
 
 .terminal--success {
@@ -55,9 +61,13 @@ input[type=checkbox] {
   border-color: red !important;
 }
 
+.terminal--warning {
+  border-color: orange !important;
+}
+
 #terminalDevice {
   display: inline-block;
-  width: 270px;
+  width: 260px;
   height: 30px;
   border: 1px solid #888;
   border-radius: 2px;
@@ -68,7 +78,6 @@ input[type=checkbox] {
 }
 
 .terminalDevice--connected {
-  background-color: #0068e7 !important;
+  background-color: var(--blue-options) !important;
   color: #FFF;
-  font-weight: 600;
 }
