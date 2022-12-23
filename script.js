@@ -4,10 +4,13 @@ const portBaudRate = document.getElementById('baudrate')
 const portDataBits = document.getElementById('databits')
 const portParity = document.getElementById('parity')
 const porStopBits = document.getElementById('stopbits')
+const sendOnConnectCheck = document.getElementById('sendOnConnect')
 const readCheck = document.getElementById('read')
 const terminal = document.getElementById('terminal')
+const terminalDevice = document.getElementById('terminalDevice')
 
 let port = null
+let portInfo = null
 
 const vendorsfilters = [
   { usbVendorId: 0x0403 },
@@ -21,31 +24,18 @@ const portOpenOptions = {
   porstopBits: porStopBits.value
 }
 
-window.addEventListener("load", getPairedPorts);
-portListeners()
-requestPortBtn.addEventListener('click', requestPorts);
-sendBtn.addEventListener('click', main)
-
 async function requestPorts() {
   try {
     await navigator.serial.requestPort({ filters: vendorsfilters }) /*: [{ usbVendorId }] */
     terminal.innerText += `< DEVICE WAS PAIRED >\n\n`
-    clearTerminalState()
+    clearTerminalBorder()
     sendBtn.focus()
   } catch (error) {
     terminal.innerText += `< ERROR: NO PORT SELECTED >\n\n`
-    terminal.classList.add('terminal_error')
+    terminal.classList.add('terminal--error')
   }
 }
 
-async function portListeners() {
-  navigator.serial.addEventListener("connect", main)
-  navigator.serial.addEventListener("disconnect", e => {
-    terminal.innerText += `< DISCONNECTED >\n\n`
-    clearTerminalState()
-    requestPortBtn.focus()
-  })
-}
 
 async function writeOnPort(port, text) {
   try {
@@ -53,7 +43,7 @@ async function writeOnPort(port, text) {
     const writer = port.writable.getWriter();
     await writer.write(encoder.encode(text));
     writer.releaseLock();
-    terminal.innerText += `WRITING: \t${text}\n`
+    terminal.innerText += `WRITING: ${text}\n`
   } catch (error) {
     console.error(error)
     terminal.innerText += `< ERROR: FAIL TO WRITE ON PORT >\n\n`
@@ -68,10 +58,10 @@ async function readOnPort(port) {
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;  // reader canceled.
-        
+
         const decoder = new TextDecoder();
         const string = decoder.decode(value);
-        terminal.innerText += `\nREADING: \t${string}\n`
+        terminal.innerText += `\nREADING: ${string}\n`
         return
       }
     } catch (error) {
@@ -88,15 +78,13 @@ async function getPairedPorts() {
   port = ports[0];
 
   if (port) {
-    const portInfo = await port.getInfo();
+    portInfo = await port.getInfo();
     console.log('Selected Port:', portInfo);
-    terminal.innerText = `Product ID: ${portInfo.usbProductId}\t\|\tVendor ID: ${portInfo.usbVendorId}\n\n`;
-    terminal.innerText += `< CONNECTED >\n\n`;
   }
 }
 
 async function main() {
-  clearTerminalState()
+  clearTerminalBorder()
   try {
     await getPairedPorts()
     if (port) {
@@ -104,11 +92,11 @@ async function main() {
       await writeOnPort(port, 'TheMoreYouNow!')
       await readOnPort(port)
       await port.close()
-      terminal.innerText += `\n< DONE >\n`
-      terminal.classList.add('terminal_sucess')
+      terminal.innerText += `\n< DONE >\n\n`
+      terminal.classList.add('terminal--success')
     } else {
       terminal.innerText += `< ERROR: PORT NOT FOUND >\n\n`
-      terminal.classList.add('terminal_error')
+      terminal.classList.add('terminal--error')
     }
   } catch (error) {
     console.error(error)
@@ -116,9 +104,43 @@ async function main() {
   }
 }
 
-function clearTerminalState() {
-  terminal.classList.remove('terminal_sucess')
-  terminal.classList.remove('terminal_error')
+function clearTerminalBorder() {
+  terminal.classList.remove('terminal--success')
+  terminal.classList.remove('terminal--error')
+}
+
+function clearTerminalDevice() {
+  terminalDevice.classList.remove('terminalDevice--connected')
+}
+
+function terminalOnConnect() {
+  terminalDevice.textContent = `Product ID: ${portInfo.usbProductId} | Vendor ID: ${portInfo.usbVendorId}`;
+  terminalDevice.classList.add('terminalDevice--connected')
+  terminal.innerText = `< CONNECTED >\n\n`;
+}
+
+function terminalOnDisconnected() {
+  terminalDevice.textContent = "No connection available";
+  terminal.innerText += `< DISCONNECTED >\n\n\n`
+  clearTerminalBorder()
+  clearTerminalDevice()
+  requestPortBtn.focus()
 }
 
 
+window.addEventListener("load", async () => {
+  await getPairedPorts()
+  if (port) terminalOnConnect()
+  if (port && sendOnConnectCheck.checked) main()
+})
+
+navigator.serial.addEventListener("connect", async () => {
+  await getPairedPorts()
+  terminalOnConnect()
+  if (sendOnConnectCheck.checked) main()
+})
+
+navigator.serial.addEventListener("disconnect", terminalOnDisconnected)
+
+requestPortBtn.addEventListener('click', requestPorts);
+sendBtn.addEventListener('click', main)

@@ -13,8 +13,10 @@
 
 <body>
   <div class="container">
+    <span id="terminalDevice">No connection available</span>
     <button id="requestPortBtn" autofocus="true">Request Port</button>
     <button id="sendBtn">Send Data</button>
+
 
     <label for="baudrate">Baud rate:</label>
     <select id="baudrate">
@@ -46,8 +48,12 @@
       <option value="1" selected>1</option>
       <option value="2">2</option>
     </select>
-    <label class="checkbox" for="read">Read</label>
+
+    <input id="sendOnConnect" type="checkbox" checked>
+    <label for="sendOnConnect">Send on connect</label>
+
     <input id="read" type="checkbox" checked>
+    <label for="read">Read</label>
   </div>
   <div id="terminal"></div>
 </body>

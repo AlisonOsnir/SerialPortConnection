@@ -3,24 +3,29 @@
   padding: 0;
   box-sizing: border-box;
 }
+
 .container {
   display: inline-block;
   margin: 10px;
 }
 
-.container select{
+.container select {
   margin-right: 10px;
 }
-.container select:hover{
-  border-color:#009BC6;
+
+.container select:hover {
+  border-color: #009BC6;
   outline: none;
 }
 
-button:focus, button:hover{
-  border-color:#009BC6;
+button:focus,
+button:hover {
+  border-color: #009BC6;
   outline: none;
 }
-#requestPortBtn, #sendBtn{
+
+#requestPortBtn,
+#sendBtn {
   height: 30px;
   width: 90px;
   margin-right: 10px;
@@ -28,9 +33,9 @@ button:focus, button:hover{
 }
 
 input[type=checkbox] {
-  transform: scale(1.5);
+  margin: 0 2px 0 16px;
   vertical-align: middle;
-  margin-left: 3px;
+  transform: scale(1.25);
 }
 
 #terminal {
@@ -38,14 +43,32 @@ input[type=checkbox] {
   background-color: #00000c;
   color: #FFF;
   min-height: 93vh;
-  padding: 10px;
-  border: 10px solid #00000c;
+  padding: 12px;
+  border: 12px solid #00000c;
 }
 
-.terminal_sucess {
-  border-color: lime !important;
+.terminal--success {
+  border-color: limegreen !important;
 }
 
-.terminal_error {
+.terminal--error {
   border-color: red !important;
+}
+
+#terminalDevice {
+  display: inline-block;
+  width: 270px;
+  height: 30px;
+  border: 1px solid #888;
+  border-radius: 2px;
+  background-color: #EEE;
+  padding: .3em .5em;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.terminalDevice--connected {
+  background-color: #0068e7 !important;
+  color: #FFF;
+  font-weight: 600;
 }
