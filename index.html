@@ -6,7 +6,6 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Serial Port Connection</title>
-
   <link rel="stylesheet" href="./style.css">
   <script defer src="./script.js"></script>
 </head>
@@ -16,7 +15,7 @@
     <label for="terminalDevice">Device: </label>
     <span id="terminalDevice">No connection available</span>
     <button id="requestPortBtn" autofocus="true">Request port</button>
-    <button id="writeBtn">Write data</button>
+    <button id="sendBtn">Send</button>
 
     <!-- <div> -->
       <label for="baudrate">Baud rate:</label>
@@ -52,8 +51,8 @@
     <!-- </div>
 
     <div> -->
-      <input id="writeOnConnect" type="checkbox" checked>
-      <label for="writeOnConnect">Write on connect</label>
+      <input id="sendOnConnect" type="checkbox" checked>
+      <label for="sendOnConnect">Send on connect</label>
 
       <input id="read" type="checkbox">
       <label for="read">Read</label>

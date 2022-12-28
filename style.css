@@ -30,7 +30,7 @@ button:hover {
 }
 
 #requestPortBtn,
-#writeBtn {
+#sendBtn {
   height: 30px;
   width: 90px;
   margin: 0 2px;
@@ -48,8 +48,8 @@ input[type=checkbox] {
   background-color: var(--black-terminal);
   color: #FFF;
   height: 90vh;
-  padding: 12px;
-  border: 12px solid var(--black-terminal);
+  padding: 8px;
+  border: 16px solid var(--black-terminal);
   overflow: auto;
 }
 
