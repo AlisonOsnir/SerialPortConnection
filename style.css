@@ -1,6 +1,7 @@
 :root {
-  --blue-options: #0068E7;
-  --black-terminal: #181818;
+  --blue: #0075FF;
+  --terminal-color: #252526;
+  --white: #FFF
 }
 
 * {
@@ -15,17 +16,17 @@
 }
 
 .container select {
-  margin: 10px;
+  margin: 10px 10px 10px 0;
 }
 
 .container select:hover {
-  border-color: var(--blue-options);
+  border-color: var(--blue);
   outline: none;
 }
 
 button:focus,
 button:hover {
-  border-color: var(--blue-options);
+  border-color: var(--blue);
   outline: none;
 }
 
@@ -38,18 +39,18 @@ button:hover {
 }
 
 input[type=checkbox] {
-  margin: 0 2px 0 16px;
+  margin-left: 1em;
   vertical-align: middle;
   transform: scale(1.25);
 }
 
 #terminal {
   display: block;
-  background-color: var(--black-terminal);
-  color: #FFF;
+  background-color: var(--terminal-color);
+  color: var(--white);
   height: 90vh;
   padding: 8px;
-  border: 16px solid var(--black-terminal);
+  border: 16px solid var(--terminal-color);
   overflow: auto;
 }
 
@@ -78,6 +79,12 @@ input[type=checkbox] {
 }
 
 .terminalDevice--connected {
-  background-color: var(--blue-options) !important;
-  color: #FFF;
+  background-color: var(--blue) !important;
+  color: var(--white);
+}
+
+@media screen and (max-width: 768px){
+  #terminal {
+    height: 82vh;
+  }
 }
