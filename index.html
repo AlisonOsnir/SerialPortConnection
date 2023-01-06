@@ -16,45 +16,63 @@
     <span id="terminalDevice">No connection available</span>
     <button id="requestPortBtn" autofocus="true">Request port</button>
     <button id="sendBtn">Send</button>
-    
-    <label for="baudrate">Baud rate:</label>
-    <select id="baudrate">
-      <option value="9600" selected>9600</option>
-      <option value="14400">14400</option>
-      <option value="19200">19220</option>
-      <option value="28800">28800</option>
-      <option value="38400">38400</option>
-      <option value="57600">57600</option>
-      <option value="115200">115200</option>
-      <option value="230400">230400</option>
-      <option value="460800">460800</option>
-      <option value="921600">921600</option>
-    </select>
 
-    <label for="databits">Data bits:</label>
-    <select id="databits" disabled>
-      <option value="7">7</option>
-      <option value="8" selected>8</option>
-    </select>
-    <label for="parity">Parity:</label>
-    <select id="parity" disabled>
-      <option value="none" selected>None</option>
-      <option value="even">Even</option> -->
-      <option value="odd">Odd</option>
-    </select>
-    <label for="stopbits">Stop bits:</label>
-    <select id="stopbits" disabled>
-      <option value="1" selected>1</option>
-      <option value="2">2</option>
-    </select>
+    <div class="options">
+      <label for="baudrate">Baud rate:</label>
+      <select id="baudrate">
+        <option value="9600" selected>9600</option>
+        <option value="14400">14400</option>
+        <option value="19200">19220</option>
+        <option value="28800">28800</option>
+        <option value="38400">38400</option>
+        <option value="57600">57600</option>
+        <option value="115200">115200</option>
+        <option value="230400">230400</option>
+        <option value="460800">460800</option>
+        <option value="921600">921600</option>
+      </select>
+    </div>
 
-    <input id="sendOnConnect" type="checkbox" checked>
-    <label for="sendOnConnect">Send on connect</label>
+    <div class="hidden">
+      <div class="options">
+        <label for="databits">Data bits:</label>
+        <select id="databits" disabled>
+          <option value="7">7</option>
+          <option value="8" selected>8</option>
+        </select>
+      </div>
 
-    <input id="read" type="checkbox">
-    <label for="read">Read</label>
+      <div class="options">
+        <label for="parity">Parity:</label>
+        <select id="parity" disabled>
+          <option value="none" selected>None</option>
+          <option value="even">Even</option> -->
+          <option value="odd">Odd</option>
+        </select>
+      </div>
+
+      <div class="options">
+        <label for="stopbits">Stop bits:</label>
+        <select id="stopbits" disabled>
+          <option value="1" selected>1</option>
+          <option value="2">2</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Para teste -->
+    <div style="display: inline-block;">
+      <div class="options">
+        <input id="sendOnConnect" type="checkbox" checked>
+        <label for="sendOnConnect">Send on connect</label>
+      </div>
+      <div class="options">
+        <input id="read" type="checkbox">
+        <label for="read">Read</label>
+      </div>
+    </div>
+
   </div>
-
   <div id="terminal"></div>
 </body>
 

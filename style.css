@@ -10,13 +10,17 @@
   box-sizing: border-box;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .container {
-  display: inline-block;
+  display: block;
   margin: 10px;
 }
 
 .container select {
-  margin: 10px 10px 10px 0;
+  margin-top: 1em;
 }
 
 .container select:hover {
@@ -68,7 +72,7 @@ input[type=checkbox] {
 
 #terminalDevice {
   display: inline-block;
-  width: 260px;
+  width: 265px;
   height: 30px;
   border: 1px solid #888;
   border-radius: 2px;
@@ -83,7 +87,11 @@ input[type=checkbox] {
   color: var(--white);
 }
 
-@media screen and (max-width: 768px){
+.options {
+  display: inline-block;
+}
+
+@media screen and (max-width: 600px){
   #terminal {
     height: 82vh;
   }
