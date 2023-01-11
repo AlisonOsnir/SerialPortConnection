@@ -16,6 +16,7 @@ const textToSend = "The more you know!"
 
 const vendorsfilters = [
   { usbVendorId: 0x0403 },
+  { usbVendorId: 0x0E8D },//M7 Tablet
   { usbVendorId: 0x1A86 },//Loopback cable
 ];
 
