@@ -3,9 +3,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Serial Port Connection</title>
+  <title>Web Serial Connection</title>
   <link rel="stylesheet" href="./style.css">
   <script defer src="./script.js"></script>
 </head>
@@ -14,7 +13,7 @@
   <div class="container">
     <label for="terminalDevice">Device: </label>
     <span id="terminalDevice">No connection available</span>
-    <button id="requestPortBtn" autofocus="true">Request port</button>
+    <button id="requestBtn" autofocus="true">Request</button>
     <button id="sendBtn">Send</button>
 
     <div class="options">
@@ -33,45 +32,35 @@
       </select>
     </div>
 
-    <div class="hidden">
-      <div class="options">
-        <label for="databits">Data bits:</label>
-        <select id="databits" disabled>
-          <option value="7">7</option>
-          <option value="8" selected>8</option>
-        </select>
-      </div>
-
-      <div class="options">
-        <label for="parity">Parity:</label>
-        <select id="parity" disabled>
-          <option value="none" selected>None</option>
-          <option value="even">Even</option> -->
-          <option value="odd">Odd</option>
-        </select>
-      </div>
-
-      <div class="options">
-        <label for="stopbits">Stop bits:</label>
-        <select id="stopbits" disabled>
-          <option value="1" selected>1</option>
-          <option value="2">2</option>
-        </select>
-      </div>
+    <div class="options">
+      <label for="databits">Data bits:</label>
+      <select id="databits" disabled>
+        <option value="7">7</option>
+        <option value="8" selected>8</option>
+      </select>
     </div>
 
-    <!-- Para teste -->
-    <div style="display: inline-block;">
-      <div class="options">
-        <input id="sendOnConnect" type="checkbox" checked>
-        <label for="sendOnConnect">Send on connect</label>
-      </div>
-      <div class="options">
-        <input id="read" type="checkbox">
-        <label for="read">Read</label>
-      </div>
+    <div class="options">
+      <label for="parity">Parity:</label>
+      <select id="parity" disabled>
+        <option value="none" selected>None</option>
+        <option value="even">Even</option> -->
+        <option value="odd">Odd</option>
+      </select>
     </div>
 
+    <div class="options">
+      <label for="stopbits">Stop bits:</label>
+      <select id="stopbits" disabled>
+        <option value="1" selected>1</option>
+        <option value="2">2</option>
+      </select>
+    </div>
+
+    <div class="sendOption">
+      <input id="autoSend" type="checkbox" checked>
+      <label for="autoSend">Auto send</label>
+    </div>
   </div>
   <div id="terminal"></div>
 </body>

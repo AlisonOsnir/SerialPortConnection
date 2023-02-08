@@ -1,111 +1,120 @@
-const requestPortBtn = document.getElementById('requestPortBtn')
+const requestBtn = document.getElementById('requestBtn')
 const sendBtn = document.getElementById('sendBtn')
 const portBaudRate = document.getElementById('baudrate')
 const portDataBits = document.getElementById('databits')
 const portParity = document.getElementById('parity')
 const porStopBits = document.getElementById('stopbits')
-const sendOnConnectCheck = document.getElementById('sendOnConnect')
-const readCheck = document.getElementById('read')
+const autoSend = document.getElementById('autoSend')
 const terminal = document.getElementById('terminal')
 const terminalDevice = document.getElementById('terminalDevice')
 
-let port = null
-let portInfo = null
+const stringToSend = "The more you know!\r\n"
+let device = null
+let deviceInfos = null
 
-const textToSend = "The more you know!"
-
-const vendorsfilters = [
-  { usbVendorId: 0x0403 },
-  { usbVendorId: 0x0E8D },//M7 Tablet
-  { usbVendorId: 0x1A86 },//Loopback cable
+const vendorfilter = [
+  { usbVendorId: 0x1A86 }, //Loopback cable
 ];
 
-const portOpenOptions = {
+const portConfigs = {
   baudRate: portBaudRate.value,
   dataBits: portDataBits.value,
   parity: portParity.value,
   porstopBits: porStopBits.value
 }
 
-async function requestPorts() {
+async function requestDevice() {
   try {
-    await navigator.serial.requestPort({ filters: vendorsfilters }) /*: [{ usbVendorId }] */
-    getPairedDevice(requested = true)
+    device = await navigator.serial.requestPort({ filters: vendorfilter })
     clearTerminalBorder()
-    sendBtn.focus()
+    await getDeviceInfos()
+    terminalOnConnect()
+
+    if (autoSend.checked) {
+      main()
+    }
+
   } catch (error) {
-    terminal.innerText += `< ERROR: NO PORT SELECTED >\n`
+    console.log(error)
+    terminal.innerText += `< ERROR: NO DEVICE SELECTED --- ${error} >\n`
     terminal.classList.add('terminal--warning')
   }
 }
 
+async function getPairedDevice() {
+  const devices = await navigator.serial.getPorts()
+  device = devices[0]
 
-async function writeOnPort(port, text) {
-  try {
-    const encoder = new TextEncoder();
-    const writer = port.writable.getWriter();
-    await writer.write(encoder.encode(text));
-    writer.releaseLock();
-    terminal.innerText += `\n WRITING: ${text}\n`
-  } catch (error) {
-    console.error(error)
-    terminal.innerText += `< ERROR: FAIL TO WRITE ON PORT >\n`
-  }
-}
+  if (device !== null) {
+    await getDeviceInfos()
+    terminalOnConnect()
 
-async function readOnPort(port) {
-  if (!readCheck.checked) return
-  while (port.readable) {
-    const reader = port.readable.getReader();
-    try {
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;  // reader canceled.
-
-        const decoder = new TextDecoder();
-        const string = decoder.decode(value);
-        terminal.innerText += `\n READING: ${string}\n`
-        return
-      }
-    } catch (error) {
-      console.error(error)
-      terminal.innerText += `< ERROR: FAIL TO READ ON PORT >\n`
-    } finally {
-      reader.releaseLock();
+    if (autoSend.checked) {
+      main()
     }
   }
 }
 
-async function getPairedDevice(requested) {
-  const ports = await navigator.serial.getPorts();
-  port = ports[0];
+async function getDeviceInfos() {
+  deviceInfos = await device.getInfo()
+  console.log('Device:', deviceInfos)
+}
 
-  if (port) {
-    portInfo = await port.getInfo();
-    console.log('Selected Device:', portInfo);
-    terminalOnConnect(requested)
+async function send(string) {
+  try {
+    const encoder = new TextEncoder()
+    const writer = device.writable.getWriter()
+    await writer.write(encoder.encode(string))
+    writer.releaseLock();
+    terminal.innerText += `SENDING: ${string}`
+  } catch (error) {
+    console.error(error)
+    terminal.innerText += `< ERROR: FAIL TO SEND DATA --- ${error} >\n`
+  }
+}
+
+async function receive() {
+  while (device.readable) {
+    const reader = device.readable.getReader();
+    try {
+      while (true) {
+        const { value, done } = await reader.read()
+        if (done) break;  // reader canceled.
+
+        const decoder = new TextDecoder()
+        const string = decoder.decode(value)
+        terminal.innerText += `READING: ${string}`
+        terminal.innerText += '\n'
+        return
+      }
+    } catch (error) {
+      console.error(error)
+      terminal.innerText += `< ERROR: FAIL TO RECEIVE DATA --- ${error} >\n`
+    } finally {
+      reader.releaseLock()
+    }
   }
 }
 
 async function main() {
   clearTerminalBorder()
   try {
-    // if (!port) await getPairedPort()
-    if (port) {
-      await port.open(portOpenOptions)
-      await writeOnPort(port, textToSend)
-      await readOnPort(port)
-      await port.close()
-      terminal.innerText += `\n< DONE >\n\n`
+    if (device !== null) {
+      await device.open(portConfigs)
+      await send(stringToSend)
+      // await receive()
+      setTimeout(await receive(), 100)
+      await device.close()
+
       terminal.classList.add('terminal--success')
-      terminal.scrollTo(0, terminal.scrollHeight);
+      terminal.scrollTo(0, terminal.scrollHeight)
     } else {
-      terminal.innerText += `< ERROR: PORT NOT FOUND >\n`
+      terminal.innerText += `< ERROR: DEVICE NOT FOUND >\n`
       terminal.classList.add('terminal--error')
     }
   } catch (error) {
     console.error(error)
-    terminal.innerText += `< ERROR: FAIL TO WRITE ON PORT >\n`
+    terminal.innerText += `< ERROR: MAIN FUNCTION ERROR --- ${error} >\n`
     terminal.classList.add('terminal--error')
   }
 }
@@ -120,37 +129,28 @@ function clearTerminalDevice() {
   terminalDevice.classList.remove('terminalDevice--connected')
 }
 
-function terminalOnConnect(requested) {
-  terminalDevice.textContent = `Product ID: ${portInfo.usbProductId} | Vendor ID: ${portInfo.usbVendorId}`;
+function terminalOnConnect() {
+  terminalDevice.textContent = `Product ID: ${deviceInfos.usbProductId} | Vendor ID: ${deviceInfos.usbVendorId}`;
   terminalDevice.classList.add('terminalDevice--connected')
-  if(requested) {
-    terminal.innerText += `< DEVICE WAS PAIRED >\n`
-    terminal.innerText += `< CONNECTED >\n`;
-    return
-  }
-  terminal.innerText = `< CONNECTED >\n`;
+  terminal.innerText = `< CONNECTED >\n\n`;
 }
 
 function terminalOnDisconnected() {
-  terminalDevice.textContent = "No connection available";
-  terminal.innerText += `< DISCONNECTED >\n\n\n`
+  device = null
   clearTerminalBorder()
   clearTerminalDevice()
-  requestPortBtn.focus()
+  requestBtn.focus()
+  terminalDevice.textContent = "No connection available"
+  terminal.innerText += `< DISCONNECTED >\n`
+  terminal.scrollTo(0, terminal.scrollHeight)
 }
 
-
-window.addEventListener("load", async () => {
-  await getPairedDevice()
-  if (port && sendOnConnectCheck.checked) main()
-})
-
-navigator.serial.addEventListener("connect", async () => {
-  await getPairedDevice()
-  if (sendOnConnectCheck.checked) main()
-})
-
+navigator.serial.addEventListener("connect", getPairedDevice)
 navigator.serial.addEventListener("disconnect", terminalOnDisconnected)
 
-requestPortBtn.addEventListener('click', requestPorts);
+requestBtn.addEventListener('click', requestDevice)
 sendBtn.addEventListener('click', main)
+
+portBaudRate.addEventListener('change', () => {
+  portConfigs.baudRate = portBaudRate.value
+})

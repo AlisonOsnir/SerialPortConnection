@@ -35,7 +35,7 @@ button:hover {
   outline: none;
 }
 
-#requestPortBtn,
+#requestBtn,
 #sendBtn {
   height: 30px;
   width: 90px;
@@ -43,10 +43,19 @@ button:hover {
   cursor: pointer;
 }
 
+.options {
+  display: inline-block;
+  margin-right: 1em;
+}
+
+.sendOption {
+  display: inline-block;
+}
+
 input[type=checkbox] {
-  margin-left: 1em;
-  vertical-align: middle;
-  transform: scale(1.25);
+  margin: 0 .3em 0 0.5em;
+  transform: scale(1.2);
+  cursor: pointer;
 }
 
 #terminal {
@@ -78,7 +87,7 @@ input[type=checkbox] {
   border: 1px solid #888;
   border-radius: 2px;
   background-color: #EEE;
-  padding: .3em .5em;
+  padding: .4em;
   margin-right: 5px;
   vertical-align: middle;
   text-align: center;
@@ -89,10 +98,6 @@ input[type=checkbox] {
   color: var(--white);
 }
 
-.options {
-  display: inline-block;
-}
-
 @media screen and (max-width: 700px) {
 
   body {
@@ -100,19 +105,20 @@ input[type=checkbox] {
   }
 
   #terminal {
-    height: 70vh;
+    height: 66vh;
+    font-size: .8em;
   }
 
   #terminalDevice {
     width: 82.5%;
-    height: 50px;
+    height: 46px;
     margin: .5em 0;
   }
 
-  #requestPortBtn,
+  #requestBtn,
   #sendBtn {
     width: 48%;
-    height: 50px;
+    height: 46px;
     font-size: 1em;
   }
 
